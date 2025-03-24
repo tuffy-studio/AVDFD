@@ -3,9 +3,11 @@ from src.models.video_cav_mae import *
 from collections import OrderedDict  # 有序字典，用于存储模型权重
 
 input_weight_path = "./weights/pre-trained/stage-2.pth"  # 预训练模型权重
-output_weight_path = "./weights/pre-trained/stage-2-adapted-4class.pth"  # 修改后的预训练模型权重
+output_weight_path = "./weights/pre-trained/stage-2-adapted-2class.pth"  # 修改后的预训练模型权重
+# output_weight_path = "./weights/pre-trained/stage-2-adapted-4class.pth"  # 修改后的预训练模型权重
 stage1_weight = torch.load(input_weight_path)
 cavmae_ft = VideoCAVMAEFT()
+# cavmae_ft = VideoCAVMAEFT_4()
 cavmae_ft = torch.nn.DataParallel(cavmae_ft)
 stage2_weight = OrderedDict()
 for k in stage1_weight.keys():

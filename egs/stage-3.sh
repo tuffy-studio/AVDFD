@@ -42,8 +42,9 @@ lr_adapt=False
 n_print_steps=100
 
 #tr_data=../data/csv/ft_train_4_augment_segmented_modified.csv
-tr_data=../data/csv/last_train.csv
-te_data=../data/csv/ft_test_4_segmented_modified.csv
+#tr_data=../data/csv/last_train.csv
+#te_data=../data/csv/ft_test_4_segmented_modified.csv
+
 
 # exp_dir=./exp/self-pretrain
 save_dir=./exp/4-class-augment-3rd

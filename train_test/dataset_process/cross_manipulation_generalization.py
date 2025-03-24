@@ -1,6 +1,7 @@
 import csv
 import os
 from collections import Counter
+import glob
 
 
 def count_type_method_combinations(csv_file):
@@ -104,6 +105,25 @@ def leave_one_out_test(csv_dir="output", output_dir="output_LOCO"):
         print(f"Created train_excl_{test_key}.csv and test_{test_key}.csv")
 
 
+def modify_csv(input_file, output_file, path=""):
+    with open(input_file, mode="r", encoding="utf-8") as infile, open(output_file, mode="w", encoding="utf-8", newline="") as outfile:
+        reader = csv.reader(infile)
+        writer = csv.writer(outfile)
+
+        # 读取并写入表头
+        header = next(reader)
+        writer.writerow(header)
+
+        # 处理每一行数据
+        for row in reader:
+            row[0] = row[0].split("FakeAVCeleb/")[-1]  # 去掉前面的路径，只保留从 FakeAVCeleb_v1.2 开始的部分
+            row[0] = "FakeAVCeleb_v1.2/" + row[0]  # 确保前缀一致
+            row[0] = path + row[0]  # 追加路径前缀
+            row[0] = row[0].replace("\\", "/")  # 统一路径分隔符为 '/'
+            writer.writerow(row)
+
+    print(f"CSV file {input_file} modification completed")
+
 # the meta_data.csv file in FakeAVCeleb dataset
 csv_file_path = r"E:\downloads\FakeAVCeleb_v1.2\FakeAVCeleb_v1.2\meta_data.csv"  # 替换为实际路径
 
@@ -120,5 +140,20 @@ types = [["RealVideo-RealAudio", "real"],
 # for AV_type, manipulation_type in types:
 #     manipulation_types_divide(csv_file_path, AV_type, manipulation_type)
 
-leave_one_out_test()
+# leave_one_out_test()
+
+
+# 修改csv中文件路径前缀
+
+input_dir = "./output_LOCO"
+output_dir = "./output_LOCO_modified"  # 处理后的 CSV 文件存放目录
+os.makedirs(output_dir, exist_ok=True)  # 如果不存在，创建输出目录  
+
+csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
+
+for input_file in csv_files:
+    filename = os.path.basename(input_file)  # 获取文件名
+    output_file = os.path.join(output_dir, filename)  # 生成输出文件路径
+
+    modify_csv(input_file, output_file, path="/home/home/wangyuxuan/jielun/")  # 处理 CSV 文件
 

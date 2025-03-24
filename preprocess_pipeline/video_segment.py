@@ -35,6 +35,9 @@ def split_videos_from_csv(input_csv, output_csv, output_dir, segment_length=3.20
                 continue
 
             base_name = os.path.splitext(os.path.basename(video_name))[0]  # 获取不带后缀的文件名
+            if os.path.exists(f"{base_name}_part_1.mp4"):
+                print(f"file {video_name} pass")
+            
             video = VideoFileClip(video_name)
             duration = video.duration  # 获取视频时长
             num_segments = math.ceil(duration / segment_length)  # 计算分割片段数
