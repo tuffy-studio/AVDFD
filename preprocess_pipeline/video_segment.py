@@ -1,6 +1,7 @@
 import os
 import math
 import csv
+import glob
 from tqdm import tqdm  # 导入 tqdm 进度条库
 from moviepy import VideoFileClip
 
@@ -107,48 +108,56 @@ def merge_csv(file1, file2, output_file):
     print(f"CSV 文件合并完成，结果保存在 {output_file}")
 
 
+def batch_process_csv(input_dir, output_dir, segments_dir):
+    """
+    对文件夹中所有 CSV 文件执行 split_videos_from_csv()
+    :param input_dir: 存放源 CSV 文件的目录
+    :param output_dir: 存放处理后 CSV 文件的目录
+    :param segments_dir: 片段存储目录
+    """
+    os.makedirs(output_dir, exist_ok=True)  # 确保输出目录存在
+
+    # 获取 input_dir 目录下所有 CSV 文件
+    csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
+
+    for src_csv in csv_files:
+        # 获取文件名
+        filename = os.path.basename(src_csv)
+        segments_csv = os.path.join(output_dir, filename)
+
+        # 执行 split_videos_from_csv
+        split_videos_from_csv(src_csv, segments_csv, segments_dir)
+        print(f"Processed: {src_csv} → {segments_csv}")
+
+
 if __name__ == "__main__":
-    src_csv = "../data/csv/ft_train_4.csv"
-    segments_csv = "../data/csv/ft_train_4_segmented.csv"
-    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/segmented_4/ft_train_4_segmented"
-    #split_videos_from_csv(src_csv, segments_csv, segments_dir)
+    # 设定路径
+    input_dir = "../train_test/output_LOCO_modified"
+    output_dir = "../train_test/output_LOCO_modified_segmented"
+    segments_dir = "/home/home/wangyuxuan/jielun/FakeAVCeleb_v1.2/"
 
-    src_csv = "../data/csv/ft_test_4.csv"
-    segments_csv = "../data/csv/ft_test_4_segmented.csv"
-    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/segmented_4/ft_test_4_segmented"
-    #split_videos_from_csv(src_csv, segments_csv, segments_dir)
+    # 批量处理
+    batch_process_csv(input_dir, output_dir, segments_dir)
 
 
-    src_csv = "../data/csv/ft_test_4_augment.csv"
-    segments_csv = "../data/csv/ft_test_4_augment_segmented.csv"
-    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/augment_segmented_4/test"
-    #split_videos_from_csv(src_csv, segments_csv, segments_dir)
+    # modify_csv(input_file="../data/csv/ft_test_4_augment_segmented.csv",
+    #            output_file="../data/csv/ft_test_4_augment_segmented_modified.csv",
+    #            path="/root/autodl-tmp/")
 
-    src_csv = "../data/csv/ft_train_4_augment.csv"
-    segments_csv = "../data/csv/ft_train_4_augment_segmented.csv"
-    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/augment_segmented_4/train"
-    #split_videos_from_csv(src_csv, segments_csv, segments_dir)
-
-
-
-    modify_csv(input_file="../data/csv/ft_test_4_augment_segmented.csv",
-               output_file="../data/csv/ft_test_4_augment_segmented_modified.csv",
-               path="/root/autodl-tmp/")
-
-    modify_csv(input_file="../data/csv/ft_train_4_augment_segmented.csv",
-               output_file="../data/csv/ft_train_4_augment_segmented_modified.csv",
-               path="/root/autodl-tmp/")
+    # modify_csv(input_file="../data/csv/ft_train_4_augment_segmented.csv",
+    #            output_file="../data/csv/ft_train_4_augment_segmented_modified.csv",
+    #            path="/root/autodl-tmp/")
 
 
 
 
 
-    modify_csv(input_file="../data/csv/ft_test_4_segmented.csv",
-               output_file="../data/csv/ft_test_4_segmented_modified.csv",
-               path="/home/home/wangyuxuan/jielun/")
+    # modify_csv(input_file="../data/csv/ft_test_4_segmented.csv",
+    #            output_file="../data/csv/ft_test_4_segmented_modified.csv",
+    #            path="/home/home/wangyuxuan/jielun/")
 
-    merge_csv(file1="../data/csv/ft_train_4_segmented_modified.csv",
-               file2="../data/csv/ft_test_4_segmented_modified.csv",
-               output_file="../data/csv/ft_all_4_segmented_modified.csv")
+    # merge_csv(file1="../data/csv/ft_train_4_segmented_modified.csv",
+    #            file2="../data/csv/ft_test_4_segmented_modified.csv",
+    #            output_file="../data/csv/ft_all_4_segmented_modified.csv")
 
 
