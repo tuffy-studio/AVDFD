@@ -155,5 +155,5 @@ for input_file in csv_files:
     filename = os.path.basename(input_file)  # 获取文件名
     output_file = os.path.join(output_dir, filename)  # 生成输出文件路径
 
-    modify_csv(input_file, output_file, path="/home/home/wangyuxuan/jielun/")  # 处理 CSV 文件
-
+    # modify_csv(input_file, output_file, path="/home/home/wangyuxuan/jielun/")  # 处理 CSV 文件
+    modify_csv(input_file, output_file, path="E:/downloads/FakeAVCeleb_v1.2/")

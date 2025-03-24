@@ -132,9 +132,12 @@ def batch_process_csv(input_dir, output_dir, segments_dir):
 
 if __name__ == "__main__":
     # 设定路径
-    input_dir = "../train_test/output_LOCO_modified"
-    output_dir = "../train_test/output_LOCO_modified_segmented"
-    segments_dir = "/home/home/wangyuxuan/jielun/FakeAVCeleb_v1.2/"
+    input_dir = "../train_test/dataset_process/output_LOCO_modified"
+    output_dir = "../train_test/dataset_process/output_LOCO_modified_segmented"
+
+    #segments_dir = "/home/home/wangyuxuan/jielun/FakeAVCeleb_v1.2/"
+
+    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/FakeAVCeleb_v1.2/"
 
     # 批量处理
     batch_process_csv(input_dir, output_dir, segments_dir)
