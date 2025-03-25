@@ -36,8 +36,9 @@ def split_videos_from_csv(input_csv, output_csv, output_dir, segment_length=3.20
                 continue
 
             base_name = os.path.splitext(os.path.basename(video_name))[0]  # 获取不带后缀的文件名
-            if os.path.exists(f"{base_name}_part_1.mp4"):
-                print(f"file {video_name} pass")
+            if os.path.exists(os.path.join(output_dir, f"{base_name}_part_1.mp4")):
+                print(f"file {video_name} has already been segmented.")
+                continue
             
             video = VideoFileClip(video_name)
             duration = video.duration  # 获取视频时长
@@ -137,7 +138,7 @@ if __name__ == "__main__":
 
     #segments_dir = "/home/home/wangyuxuan/jielun/FakeAVCeleb_v1.2/"
 
-    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/FakeAVCeleb_v1.2/"
+    segments_dir = "E:/downloads/FakeAVCeleb_v1.2/cross_manipulation_segmented"
 
     # 批量处理
     batch_process_csv(input_dir, output_dir, segments_dir)
