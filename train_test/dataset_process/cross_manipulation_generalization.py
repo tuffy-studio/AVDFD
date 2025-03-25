@@ -117,8 +117,9 @@ def modify_csv(input_file, output_file, path=""):
 
         # 处理每一行数据
         for row in reader:
-            row[0] = row[0].split("FakeAVCeleb/")[-1]  # 去掉前面的路径，只保留从 FakeAVCeleb_v1.2 开始的部分
-            row[0] = "FakeAVCeleb_v1.2/" + row[0]  # 确保前缀一致
+            # row[0] = row[0].split("FakeAVCeleb/")[-1]  # 去掉前面的路径，只保留从 FakeAVCeleb_v1.2 开始的部分
+            row[0] = row[0].split("FakeAVCeleb_v1.2/")[-1]  # 去掉前面的路径，只保留从 FakeAVCeleb_v1.2 开始的部分
+            #row[0] = "FakeAVCeleb_v1.2/" + row[0]  # 确保前缀一致
             row[0] = path + row[0]  # 追加路径前缀
             row[0] = row[0].replace("\\", "/")  # 统一路径分隔符为 '/'
             writer.writerow(row)
@@ -144,14 +145,17 @@ def balance_csv(input_csv, output_csv):
     data_0 = [row for row in data if row[1] == '0']
     data_1 = [row for row in data if row[1] == '1']
 
+    if len(data_0) == 0:
+        return
+
     # 找到较大类别的样本数
     max_samples = max(len(data_0), len(data_1))
 
     # 过采样（随机复制少数类样本）
     if len(data_0) < len(data_1):
-        data_0 = data_0 * (max_samples // len(data_0)) + random.sample(data_0, max_samples % len(data_0))
+        data_0 = data_0 * (max_samples // (5*len(data_0))) + random.sample(data_0, max_samples % len(data_0))
     else:
-        data_1 = data_1 * (max_samples // len(data_1)) + random.sample(data_1, max_samples % len(data_1))
+        data_1 = data_1 * (max_samples // (5*len(data_1))) + random.sample(data_1, max_samples % len(data_1))
 
     # 合并数据并打乱顺序
     balanced_data = data_0 + data_1
@@ -202,15 +206,29 @@ types = [["RealVideo-RealAudio", "real"],
 
 
 
-# 数据过采样
+# # 数据过采样
+#
+# input_dir = "./output_LOCO_modified_segmented"  # 处理后的 CSV 文件存放目录
+# output_dir = "./output_LOCO_modified_segmented_oversampled"
+# os.makedirs(output_dir, exist_ok=True)  # 如果不存在，创建输出目录
+#
+# csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
+#
+# for input_file in csv_files:
+#     filename = os.path.basename(input_file)  # 获取文件名
+#     output_file = os.path.join(output_dir, filename)  # 生成输出文件路径
+#     balance_csv(input_file, output_file)
 
-input_dir = "./output_LOCO_modified_segmented"  # 处理后的 CSV 文件存放目录
-output_dir = "./output_LOCO_modified_segmented_oversampled"
-os.makedirs(output_dir, exist_ok=True)  # 如果不存在，创建输出目录  
+
+input_dir = "C:/Users/23950/Desktop/GP/AVDFD/data_csv/LOCO_csv/"
+output_dir = "C:/Users/23950/Desktop/GP/AVDFD/data_csv/LOCO_csv_modified/"  # 处理后的 CSV 文件存放目录
+os.makedirs(output_dir, exist_ok=True)  # 如果不存在，创建输出目录
 
 csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
 
 for input_file in csv_files:
     filename = os.path.basename(input_file)  # 获取文件名
     output_file = os.path.join(output_dir, filename)  # 生成输出文件路径
-    balance_csv(input_file, output_file)
+
+    modify_csv(input_file, output_file, path="/home/home/wangyuxuan/jielun/")
+
