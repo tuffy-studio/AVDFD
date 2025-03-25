@@ -49,7 +49,8 @@ def split_videos_from_csv(input_csv, output_csv, output_dir, segment_length=3.20
 
                 # 生成分割后的视频文件名
                 output_file = os.path.join(output_dir, f"{base_name}_part_{i + 1}.mp4")
-
+                print(output_file)
+                
                 if not os.path.exists(output_file):
                     # 进行视频分割
                     segment = video.subclipped(start_time, end_time)
