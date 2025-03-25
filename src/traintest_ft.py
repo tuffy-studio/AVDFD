@@ -128,10 +128,10 @@ def train(model, train_loader, test_loader, args):
                                   {'params': mlp_params, 'lr': args.lr * args.head_lr}], 
                                   weight_decay=5e-7, betas=(0.95, 0.999))
     
-    checkpoint = torch.load("%s/models/best_optim_state.pth" % (exp_dir))  # 加载优化器状态
+    # checkpoint = torch.load("%s/models/best_optim_state.pth" % (exp_dir))  # 加载优化器状态
     #for param_group in optimizer.param_groups:
     #    param_group['weight_decay'] = 1e-3
-    optimizer.load_state_dict(checkpoint)  # 恢复优化器状态
+    # optimizer.load_state_dict(checkpoint)  # 恢复优化器状态
 
     # optimizer.param_groups是一个包含一个或多个字典的列表，每个字典描述了一个参数组的配置
     base_lr = optimizer.param_groups[0]['lr']
@@ -173,7 +173,9 @@ def train(model, train_loader, test_loader, args):
     if args.loss == 'BCE':
         loss_fn = nn.BCEWithLogitsLoss()
     elif args.loss == 'CE':
-        loss_fn = nn.CrossEntropyLoss()
+        class_weights = torch.tensor([1.0, 1.0]).to(device)  # 转移到正确的设备
+        loss_fn = nn.CrossEntropyLoss(weight=class_weights)
+        #loss_fn = nn.CrossEntropyLoss()
     args.loss_fn = loss_fn
     
     epoch += 1
@@ -199,6 +201,7 @@ def train(model, train_loader, test_loader, args):
             B = a_input.shape[0]
             a_input = a_input.to(device, non_blocking=True)
             v_input = v_input.to(device, non_blocking=True)
+            print(f"labels: {labels}")
             labels = labels.to(device)
             
             data_time.update(time.time() - end_time)
@@ -250,13 +253,13 @@ def train(model, train_loader, test_loader, args):
                     print("training diverged...")
                     return
 
-            save_loss("train_loss_rtvc.csv", epoch=epoch, loss=loss_meter.avg)
-        
             end_time = time.time()
             global_step += 1
         
-            if args.save_model == True:
-                torch.save(model.state_dict(), "%s/models/audio_model.%d.pth" % (exp_dir, epoch))
+        if args.save_model == True:
+            torch.save(model.state_dict(), "%s/models/audio_model.%d.pth" % (exp_dir, epoch))
+        
+        save_loss("train_loss_rtvc.csv", epoch=epoch, loss=loss_meter.avg)
         
         #========================================模型验证=================================
         print('start validation')
@@ -294,8 +297,6 @@ def train(model, train_loader, test_loader, args):
         if best_epoch == epoch:
             torch.save(model.state_dict(), "%s/models/best_audio_model.pth" % (exp_dir))
             torch.save(optimizer.state_dict(), "%s/models/best_optim_state.pth" % (exp_dir))
-        if args.save_model == True:
-            torch.save(model.state_dict(), "%s/models/audio_model.%d.pth" % (exp_dir, epoch))
         
     
         if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
