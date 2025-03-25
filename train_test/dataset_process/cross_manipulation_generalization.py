@@ -2,6 +2,7 @@ import csv
 import os
 from collections import Counter
 import glob
+import random
 
 
 def count_type_method_combinations(csv_file):
@@ -124,6 +125,47 @@ def modify_csv(input_file, output_file, path=""):
 
     print(f"CSV file {input_file} modification completed")
 
+
+def balance_csv(input_csv, output_csv):
+    """
+    使用随机过采样，使 0 和 1 的样本数相等，并保存到新的 CSV 文件。
+
+    参数:
+    - input_csv: str, 输入的 CSV 文件路径。
+    - output_csv: str, 输出的 CSV 文件路径。
+    """
+    # 读取 CSV 数据
+    with open(input_csv, mode='r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        header = next(reader)  # 读取表头
+        data = list(reader)  # 读取数据
+    
+    # 按 label 分类
+    data_0 = [row for row in data if row[1] == '0']
+    data_1 = [row for row in data if row[1] == '1']
+
+    # 找到较大类别的样本数
+    max_samples = max(len(data_0), len(data_1))
+
+    # 过采样（随机复制少数类样本）
+    if len(data_0) < len(data_1):
+        data_0 = data_0 * (max_samples // len(data_0)) + random.sample(data_0, max_samples % len(data_0))
+    else:
+        data_1 = data_1 * (max_samples // len(data_1)) + random.sample(data_1, max_samples % len(data_1))
+
+    # 合并数据并打乱顺序
+    balanced_data = data_0 + data_1
+    random.shuffle(balanced_data)
+
+    # 写入新的 CSV 文件
+    with open(output_csv, mode='w', encoding='utf-8', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)  # 写入表头
+        writer.writerows(balanced_data)  # 写入数据
+
+    print(f"已生成均衡数据集：{output_csv}")
+
+
 # the meta_data.csv file in FakeAVCeleb dataset
 csv_file_path = r"E:\downloads\FakeAVCeleb_v1.2\FakeAVCeleb_v1.2\meta_data.csv"  # 替换为实际路径
 
@@ -145,8 +187,25 @@ types = [["RealVideo-RealAudio", "real"],
 
 # 修改csv中文件路径前缀
 
-input_dir = "./output_LOCO"
-output_dir = "./output_LOCO_modified"  # 处理后的 CSV 文件存放目录
+# input_dir = "./output_LOCO"
+# output_dir = "./output_LOCO_modified"  # 处理后的 CSV 文件存放目录
+# os.makedirs(output_dir, exist_ok=True)  # 如果不存在，创建输出目录  
+
+# csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
+
+# for input_file in csv_files:
+#     filename = os.path.basename(input_file)  # 获取文件名
+#     output_file = os.path.join(output_dir, filename)  # 生成输出文件路径
+
+#     # modify_csv(input_file, output_file, path="/home/home/wangyuxuan/jielun/")  # 处理 CSV 文件
+#     modify_csv(input_file, output_file, path="E:/downloads/FakeAVCeleb_v1.2/")
+
+
+
+# 数据过采样
+
+input_dir = "./output_LOCO_modified_segmented"  # 处理后的 CSV 文件存放目录
+output_dir = "./output_LOCO_modified_segmented_oversampled"
 os.makedirs(output_dir, exist_ok=True)  # 如果不存在，创建输出目录  
 
 csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
@@ -154,6 +213,4 @@ csv_files = glob.glob(os.path.join(input_dir, "*.csv"))
 for input_file in csv_files:
     filename = os.path.basename(input_file)  # 获取文件名
     output_file = os.path.join(output_dir, filename)  # 生成输出文件路径
-
-    # modify_csv(input_file, output_file, path="/home/home/wangyuxuan/jielun/")  # 处理 CSV 文件
-    modify_csv(input_file, output_file, path="E:/downloads/FakeAVCeleb_v1.2/")
+    balance_csv(input_file, output_file)

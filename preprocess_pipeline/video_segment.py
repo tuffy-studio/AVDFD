@@ -132,6 +132,7 @@ def batch_process_csv(input_dir, output_dir, segments_dir):
         print(f"Processed: {src_csv} → {segments_csv}")
 
 
+
 if __name__ == "__main__":
     # 设定路径
     input_dir = "../train_test/dataset_process/output_LOCO_modified"
