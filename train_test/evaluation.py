@@ -1,6 +1,6 @@
 import sys 
-sys.path.append("/root/autodl-tmp/graduation-project/")
-
+#sys.path.append("/root/autodl-tmp/graduation-project/")
+sys.path.append("/home/home/wangyuxuan/jielun/AVDFD/")
 import torch
 import torch.nn as nn
 from src.models.video_cav_mae import VideoCAVMAEFT

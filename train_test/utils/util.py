@@ -116,6 +116,7 @@ def plot_precision_recall_curve(y_true, y_scores, class_name):
     #plt.show()
     plt.savefig(f"PR_curve_{class_name}.png")
 
+
 def plot_roc_curve(y_true, y_scores, class_name):
     """
     绘制 ROC (Receiver Operating Characteristic) 曲线，并显示 AUC (Area Under Curve)。
