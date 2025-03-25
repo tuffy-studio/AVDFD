@@ -36,9 +36,6 @@ def split_videos_from_csv(input_csv, output_csv, output_dir, segment_length=3.20
                 continue
 
             base_name = os.path.splitext(os.path.basename(video_name))[0]  # 获取不带后缀的文件名
-            if os.path.exists(os.path.join(output_dir, f"{base_name}_part_1.mp4")):
-                print(f"file {video_name} has already been segmented.")
-                continue
             
             video = VideoFileClip(video_name)
             duration = video.duration  # 获取视频时长
@@ -53,11 +50,14 @@ def split_videos_from_csv(input_csv, output_csv, output_dir, segment_length=3.20
                 # 生成分割后的视频文件名
                 output_file = os.path.join(output_dir, f"{base_name}_part_{i + 1}.mp4")
 
-                # 进行视频分割
-                segment = video.subclipped(start_time, end_time)
-                segment.write_videofile(output_file, codec="libx264", audio_codec="aac", logger=None)
+                if not os.path.exists(output_file):
+                    # 进行视频分割
+                    segment = video.subclipped(start_time, end_time)
+                    segment.write_videofile(output_file, codec="libx264", audio_codec="aac", logger=None)
+                else:
+                    print(f"file {video_name} has already been segmented. Only need to write csv file.")
 
-                # 直接追加写入新的 CSV 文件
+                # 追加写入新的 CSV 文件
                 with open(output_csv, 'a', newline='') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow([output_file, target])
